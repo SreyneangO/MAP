@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Map Guide</title>
+    <!-- what is this mean? META -->
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+    
+    .stripe {
+    width: 15%;
+    height: 100%;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    animation-duration: 2s;
+    animation-name: jello;
+    }
+    
+    html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    }
+    #map {
+    height: 100%;
+    }
+    .controls {
+    margin-top: 10px;
+    border: 1px solid transparent;
+    border-radius: 2px 0 0 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 32px;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    #pac-input {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    margin-left: 12px;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 80%;
+    }
+    #pac-input:focus {
+    border-color: #4d90fe;
+    }
+    .pac-container {
+    font-family: Roboto;
+    }
+    #type-selector {
+    color: #fff;
+    background-color: #4d90fe;
+    padding: 5px 11px 0px 11px;
+    }
+    #type-selector label {
+    font-family: Roboto;
+    font-size: 13px;
+    font-weight: 300;
+    }
+    </style>
+  </head>
+  <body>
+    <input id="pac-input" class="controls" type="text"
+    placeholder="Enter a location in Phnom Penh">
+    
+    <div id="map"></div>
+    <script>
+    // why you need to start with script?
+    
+    function initMap() {
+    // what is happening in the 'center"?
+    var map = new google.maps.Map(document.getElementById('map'), {
+    center: {lat: 11.5493952, lng: 104.8853669},
+    zoom: 13
+    });
+    var input = /** @type {!HTMLInputElement} */(
+    document.getElementById('pac-input'));
+    // what is pac-input mean? Please tell about how the applicaiton work everything!
+    var types = document.getElementById('type-selector');
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
+    
+    var autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.bindTo('bounds', map);
+    var infowindow = new google.maps.InfoWindow();
+    var marker = new google.maps.Marker({
+    map: map,
+    anchorPoint: new google.maps.Point(0, -2)
+    });
+    autocomplete.addListener('place_changed', function() {
+    
+    infowindow.close();
+    marker.setVisible(false);
+    var place = autocomplete.getPlace();
+    if (!place.geometry) {
+    window.alert("Autocomplete's returned place contains no geometry");
+    // change message to "Check the name again, there is no result!"
+    return;
+    }
+    // If the place has a geometry, then present it on a map.
+    if (place.geometry.viewport) {
+    map.fitBounds(place.geometry.viewport);
+    } else {
+    map.setCenter(place.geometry.location);
+    map.setZoom(17);  // Why 17? Because it looks good.
+    }
+    // I can't understand!
+    marker.setIcon(/** @type {google.maps.Icon} */({
+    url: place.icon,
+    size: new google.maps.Size(71, 71),
+    origin: new google.maps.Point(0, 0),
+    anchor: new google.maps.Point(10, 20),
+    scaledSize: new google.maps.Size(35, 35)
+    }));
+    marker.setPosition(place.geometry.location);
+    marker.setVisible(true);
+    // what this section function?
+    var address = '';
+    if (place.address_components) {
+    address = [
+    (place.address_components[0] && place.address_components[0].long_name || ''),
+    (place.address_components[1] && place.address_components[1].long_name || ''),
+    (place.address_components[2] && place.address_components[2].long_name || ''),
+    
+    ].join('<br />');
+    }
+    
+    
+    // I do understand this page but you have to tell me more!
+    infowindow.setContent('<div><center><strong>' + place.name + '</strong></center>' + address + '<br><button id="sound">Khmer voice</button>');
+      infowindow.open(map, marker);
+      // change the message to Hear me.
+      sound.addEventListener('click', function() {
+      var audio = new Audio(place.name + '.m4a');
+      audio.play();
+      });
+      
+      });
+      }
+      </script>
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATRSDQXF7wRkGQFdEDIYysP8dDHVBB6NI&libraries=places&callback=initMap"
+      async defer></script>
+      <!-- what is async defer -->
+      <style type="text/css">
+      #sound{
+      width: 100px;
+      height: 25px;
+      border-radius:20px;
+      color:#8B4513 ;
+      background-color: white;
+      }
+      </style>
+      
+    </body>
+  </html>
